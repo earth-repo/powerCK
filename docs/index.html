@@ -25,16 +25,8 @@
             gap: 12px;
         }
 
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #f1f5f9;
-        }
-
-        .header .subtitle {
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
+        .header h1 { font-size: 1.5rem; font-weight: 700; color: #f1f5f9; }
+        .header .subtitle { font-size: 0.85rem; color: #94a3b8; }
 
         .device-badge {
             background: #1e293b;
@@ -45,11 +37,7 @@
             color: #cbd5e1;
         }
 
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 24px 16px;
-        }
+        .container { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
 
         /* ===== Status Card ===== */
         .status-card {
@@ -73,34 +61,21 @@
             animation: pulse-red 2s infinite;
         }
 
-        .status-card.loading {
-            border-color: #475569;
-        }
+        .status-card.loading { border-color: #475569; }
 
         @keyframes pulse-red {
             0%, 100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.15); }
             50% { box-shadow: 0 0 50px rgba(239, 68, 68, 0.3); }
         }
 
-        .status-icon {
-            font-size: 4rem;
-            margin-bottom: 12px;
-        }
+        .status-icon { font-size: 4rem; margin-bottom: 12px; }
 
-        .status-text {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
+        .status-text { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
         .status-card.power-on .status-text { color: #22c55e; }
         .status-card.power-off .status-text { color: #ef4444; }
         .status-card.loading .status-text { color: #94a3b8; }
 
-        .status-detail {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
+        .status-detail { color: #94a3b8; font-size: 0.9rem; }
 
         /* ===== Info Grid ===== */
         .info-grid {
@@ -125,16 +100,11 @@
             margin-bottom: 6px;
         }
 
-        .info-card .value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
+        .info-card .value { font-size: 1.1rem; font-weight: 600; color: #f1f5f9; }
 
         .online-dot {
             display: inline-block;
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             border-radius: 50%;
             margin-right: 6px;
             animation: blink-dot 1.5s infinite;
@@ -147,6 +117,26 @@
         @keyframes blink-dot {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
+        }
+
+        /* ===== Chart Section ===== */
+        .chart-section {
+            background: #1e293b;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-section h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
         }
 
         /* ===== Event Log ===== */
@@ -165,10 +155,7 @@
             align-items: center;
         }
 
-        .events-header h2 {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
+        .events-header h2 { font-size: 1.1rem; font-weight: 600; }
 
         .event-count {
             background: #334155;
@@ -178,55 +165,24 @@
             color: #94a3b8;
         }
 
-        .events-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
+        .events-list { max-height: 400px; overflow-y: auto; }
 
         .event-item {
             display: flex;
             align-items: center;
             padding: 14px 24px;
-            border-bottom: 1px solid #1e293b;
+            border-bottom: 1px solid #0f172a;
             gap: 14px;
             transition: background 0.2s;
         }
 
-        .event-item:hover {
-            background: #334155;
-        }
-
-        .event-item:last-child {
-            border-bottom: none;
-        }
-
-        .event-icon {
-            font-size: 1.3rem;
-            flex-shrink: 0;
-        }
-
-        .event-info {
-            flex: 1;
-        }
-
-        .event-message {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #e2e8f0;
-        }
-
-        .event-device {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-top: 2px;
-        }
-
-        .event-time {
-            font-size: 0.8rem;
-            color: #64748b;
-            text-align: right;
-            flex-shrink: 0;
-        }
+        .event-item:hover { background: #334155; }
+        .event-item:last-child { border-bottom: none; }
+        .event-icon { font-size: 1.3rem; flex-shrink: 0; }
+        .event-info { flex: 1; }
+        .event-message { font-size: 0.9rem; font-weight: 500; color: #e2e8f0; }
+        .event-device { font-size: 0.75rem; color: #64748b; margin-top: 2px; }
+        .event-time { font-size: 0.8rem; color: #64748b; text-align: right; flex-shrink: 0; }
 
         .events-empty {
             padding: 40px 24px;
@@ -235,14 +191,9 @@
         }
 
         /* ===== Footer ===== */
-        .footer {
-            text-align: center;
-            padding: 24px;
-            color: #475569;
-            font-size: 0.8rem;
-        }
+        .footer { text-align: center; padding: 24px; color: #475569; font-size: 0.8rem; }
 
-        /* ===== Config Modal ===== */
+        /* ===== Config ===== */
         .config-bar {
             background: #1e293b;
             border: 1px solid #f59e0b;
@@ -258,35 +209,20 @@
         .config-bar.hidden { display: none; }
 
         .config-bar input {
-            flex: 1;
-            min-width: 200px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: #e2e8f0;
-            font-size: 0.9rem;
+            flex: 1; min-width: 200px;
+            padding: 8px 12px; border-radius: 8px;
+            border: 1px solid #475569; background: #0f172a;
+            color: #e2e8f0; font-size: 0.9rem;
         }
 
         .config-bar button {
-            padding: 8px 20px;
-            border-radius: 8px;
-            border: none;
-            background: #3b82f6;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
+            padding: 8px 20px; border-radius: 8px; border: none;
+            background: #3b82f6; color: white; font-weight: 600;
+            cursor: pointer; font-size: 0.9rem;
         }
 
         .config-bar button:hover { background: #2563eb; }
-
-        .config-link {
-            color: #f59e0b;
-            cursor: pointer;
-            font-size: 0.8rem;
-            text-decoration: underline;
-        }
+        .config-link { color: #f59e0b; cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
 
         /* ===== Scrollbar ===== */
         .events-list::-webkit-scrollbar { width: 6px; }
@@ -303,6 +239,7 @@
             .status-text { font-size: 1.4rem; }
             .info-grid { grid-template-columns: 1fr 1fr; }
             .event-item { padding: 12px 16px; }
+            .chart-container { height: 160px; }
         }
     </style>
 </head>
@@ -318,7 +255,7 @@
 
 <div class="container">
 
-    <!-- Config Bar ซ่อนไว้ — กดตั้งค่าถึงจะแสดง -->
+    <!-- Config Bar ซ่อนไว้ -->
     <div class="config-bar hidden" id="configBar">
         <span>&#9881;</span>
         <input type="text" id="cfgApiKey" placeholder="Firebase API Key">
@@ -356,6 +293,14 @@
         </div>
     </div>
 
+    <!-- กราฟ Timeline สถานะไฟ -->
+    <div class="chart-section">
+        <h2>&#9889; กราฟสถานะไฟฟ้า</h2>
+        <div class="chart-container">
+            <canvas id="powerChart"></canvas>
+        </div>
+    </div>
+
     <!-- ประวัติเหตุการณ์ -->
     <div class="events-section">
         <div class="events-header">
@@ -367,7 +312,7 @@
         </div>
     </div>
 
-    <!-- เปลี่ยนค่า Firebase -->
+    <!-- ตั้งค่า -->
     <div style="text-align:center; margin-top:16px;">
         <span class="config-link" onclick="showConfig()">&#9881; ตั้งค่า Firebase</span>
     </div>
@@ -378,18 +323,21 @@
     Power Monitor Dashboard &mdash; ESP32 + Firebase Realtime Database
 </div>
 
-<!-- Firebase SDK (compat mode สำหรับความเรียบง่าย) -->
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <script>
     // =====================================================
-    // ค่า Firebase — hardcode ไว้เลย ไม่ต้องกรอก
+    // ค่า Firebase — hardcode ไว้เลย
     // =====================================================
     const FIREBASE_API_KEY = 'AIzaSyBiw8hrbwd1POp69-0Mjy4aa8jaL-J8tpQ';
     const FIREBASE_DB_URL  = 'https://powerck-default-rtdb.asia-southeast1.firebasedatabase.app';
 
-    // ล้าง config เก่าจาก localStorage (ป้องกัน bug จากเวอร์ชันก่อน)
     localStorage.removeItem('powerMonitorConfig');
 
     function showConfig() {
@@ -441,6 +389,133 @@
     }
 
     // =====================================================
+    // สร้างกราฟ Timeline ด้วย Chart.js
+    // =====================================================
+    let powerChart = null;
+
+    function initChart() {
+        const ctx = document.getElementById('powerChart').getContext('2d');
+        powerChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'สถานะไฟฟ้า',
+                    data: [],
+                    stepped: 'before',
+                    fill: true,
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return 'rgba(34,197,94,0.1)';
+                        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                        gradient.addColorStop(0, 'rgba(34, 197, 94, 0.25)');
+                        gradient.addColorStop(1, 'rgba(34, 197, 94, 0.02)');
+                        return gradient;
+                    },
+                    borderColor: '#22c55e',
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    pointBackgroundColor: function(context) {
+                        const val = context.raw ? context.raw.y : 0;
+                        return val === 1 ? '#22c55e' : '#ef4444';
+                    },
+                    pointBorderColor: function(context) {
+                        const val = context.raw ? context.raw.y : 0;
+                        return val === 1 ? '#166534' : '#991b1b';
+                    },
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 8,
+                    segment: {
+                        borderColor: function(context) {
+                            return context.p1.raw.y === 0 ? '#ef4444' : '#22c55e';
+                        },
+                        backgroundColor: function(context) {
+                            return context.p1.raw.y === 0
+                                ? 'rgba(239, 68, 68, 0.1)'
+                                : 'rgba(34, 197, 94, 0.1)';
+                        }
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'nearest', intersect: false },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            tooltipFormat: 'dd/MM/yyyy HH:mm:ss',
+                            displayFormats: {
+                                minute: 'HH:mm',
+                                hour: 'HH:mm',
+                                day: 'dd/MM'
+                            }
+                        },
+                        grid: { color: 'rgba(71, 85, 105, 0.3)' },
+                        ticks: { color: '#94a3b8', maxTicksLimit: 8 }
+                    },
+                    y: {
+                        min: -0.1,
+                        max: 1.1,
+                        grid: { color: 'rgba(71, 85, 105, 0.3)' },
+                        ticks: {
+                            color: '#94a3b8',
+                            stepSize: 1,
+                            callback: function(value) {
+                                if (value === 1) return '⚡ มีไฟ';
+                                if (value === 0) return '🔌 ไฟดับ';
+                                return '';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        borderColor: '#475569',
+                        borderWidth: 1,
+                        titleColor: '#f1f5f9',
+                        bodyColor: '#cbd5e1',
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw.y === 1 ? '⚡ ไฟฟ้าปกติ' : '🔌 ไฟฟ้าดับ';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateChart(events) {
+        if (!powerChart || !events) return;
+
+        // แปลง events เป็น array แล้วเรียงตามเวลา
+        const arr = Object.values(events);
+        arr.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+        // แปลงเป็น data points สำหรับ Chart.js
+        const dataPoints = arr.map(ev => ({
+            x: new Date(ev.timestamp * 1000),
+            y: ev.status === 'power_on' ? 1 : 0
+        }));
+
+        // เพิ่มจุดปัจจุบันต่อท้าย (ให้เส้นลากมาถึงปัจจุบัน)
+        if (dataPoints.length > 0) {
+            const lastPoint = dataPoints[dataPoints.length - 1];
+            dataPoints.push({
+                x: new Date(),
+                y: lastPoint.y
+            });
+        }
+
+        powerChart.data.datasets[0].data = dataPoints;
+        powerChart.update('none');
+    }
+
+    // =====================================================
     // อัปเดต UI
     // =====================================================
     function updateStatusCard(data) {
@@ -464,22 +539,20 @@
 
         if (data.status === 'power_on') {
             card.classList.add('power-on');
-            icon.textContent = '\u2705';
+            icon.textContent = '\u26A1';
             text.textContent = 'ไฟฟ้าปกติ';
             detail.textContent = 'ระบบไฟฟ้าทำงานเป็นปกติ';
         } else {
             card.classList.add('power-off');
-            icon.textContent = '\u26A0\uFE0F';
+            icon.textContent = '\uD83D\uDD0C';
             text.textContent = 'ไฟฟ้าดับ';
             detail.textContent = 'ตรวจพบไฟฟ้าดับ!';
         }
 
-        // อัปเดต info cards
         document.getElementById('lastUpdate').textContent = timeAgo(data.timestamp);
         document.getElementById('wifiRssi').textContent = rssiLabel(data.wifi_rssi);
         document.getElementById('uptime').textContent = formatUptime(data.uptime_ms);
 
-        // ตรวจว่า ESP32 ออนไลน์อยู่ไหม (heartbeat ไม่เกิน 2 นาที)
         const dot = document.getElementById('onlineDot');
         const espStatus = document.getElementById('espStatus');
         const age = Math.floor(Date.now() / 1000) - (data.timestamp || 0);
@@ -503,11 +576,9 @@
             return;
         }
 
-        // แปลง object เป็น array แล้วเรียงจากใหม่ไปเก่า
         const arr = Object.entries(events).map(([key, val]) => ({ id: key, ...val }));
         arr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-        // แสดงสูงสุด 50 รายการ
         const display = arr.slice(0, 50);
         countEl.textContent = `${arr.length} รายการ`;
 
@@ -518,7 +589,7 @@
 
         list.innerHTML = display.map(ev => {
             const isPowerOn = ev.status === 'power_on';
-            const icon = isPowerOn ? '\u2705' : '\u26A0\uFE0F';
+            const icon = isPowerOn ? '\u26A1' : '\uD83D\uDD0C';
             const message = ev.message || (isPowerOn ? 'ไฟฟ้ากลับมาเป็นปกติ' : 'ตรวจพบไฟฟ้าดับ');
             return `
                 <div class="event-item">
@@ -531,34 +602,33 @@
                 </div>
             `;
         }).join('');
+
+        // อัปเดตกราฟด้วยข้อมูลเดียวกัน
+        updateChart(events);
     }
 
     // =====================================================
     // เชื่อมต่อ Firebase และ listen แบบ real-time
     // =====================================================
     function initFirebase() {
-        // Initialize Firebase ด้วยค่าที่ hardcode ไว้
         firebase.initializeApp({
             apiKey: FIREBASE_API_KEY,
             databaseURL: FIREBASE_DB_URL
         });
         const db = firebase.database();
 
-        // ===== Listen สถานะปัจจุบันแบบ real-time =====
         db.ref('power_monitor/current').on('value', snapshot => {
-            const data = snapshot.val();
-            updateStatusCard(data);
+            updateStatusCard(snapshot.val());
         });
 
-        // ===== Listen ประวัติเหตุการณ์แบบ real-time =====
-        // ดึง 50 รายการล่าสุด (เรียงตาม timestamp)
         db.ref('power_monitor/events').orderByChild('timestamp').limitToLast(50).on('value', snapshot => {
             const data = snapshot.val();
             renderEvents(data);
         });
     }
 
-    // เริ่มต้นเมื่อหน้าเว็บโหลดเสร็จ
+    // เริ่มต้น
+    initChart();
     initFirebase();
 </script>
 
