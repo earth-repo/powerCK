@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Monitor Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 24px 32px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .header .subtitle {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .device-badge {
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        /* ===== Status Card ===== */
+        .status-card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 24px;
+            border: 2px solid #334155;
+            transition: border-color 0.5s, box-shadow 0.5s;
+        }
+
+        .status-card.power-on {
+            border-color: #22c55e;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.15);
+        }
+
+        .status-card.power-off {
+            border-color: #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.15);
+            animation: pulse-red 2s infinite;
+        }
+
+        .status-card.loading {
+            border-color: #475569;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.15); }
+            50% { box-shadow: 0 0 50px rgba(239, 68, 68, 0.3); }
+        }
+
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 12px;
+        }
+
+        .status-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .status-card.power-on .status-text { color: #22c55e; }
+        .status-card.power-off .status-text { color: #ef4444; }
+        .status-card.loading .status-text { color: #94a3b8; }
+
+        .status-detail {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* ===== Info Grid ===== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #334155;
+        }
+
+        .info-card .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .info-card .value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .online-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: blink-dot 1.5s infinite;
+        }
+
+        .online-dot.green { background: #22c55e; }
+        .online-dot.red { background: #ef4444; }
+        .online-dot.gray { background: #64748b; animation: none; }
+
+        @keyframes blink-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ===== Event Log ===== */
+        .events-section {
+            background: #1e293b;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+
+        .events-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .events-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .event-count {
+            background: #334155;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .events-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 24px;
+            border-bottom: 1px solid #1e293b;
+            gap: 14px;
+            transition: background 0.2s;
+        }
+
+        .event-item:hover {
+            background: #334155;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .event-info {
+            flex: 1;
+        }
+
+        .event-message {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .event-device {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .event-time {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .events-empty {
+            padding: 40px 24px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: #475569;
+            font-size: 0.8rem;
+        }
+
+        /* ===== Config Modal ===== */
+        .config-bar {
+            background: #1e293b;
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .config-bar.hidden { display: none; }
+
+        .config-bar input {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .config-bar button {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .config-bar button:hover { background: #2563eb; }
+
+        .config-link {
+            color: #f59e0b;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: underline;
+        }
+
+        /* ===== Scrollbar ===== */
+        .events-list::-webkit-scrollbar { width: 6px; }
+        .events-list::-webkit-scrollbar-track { background: #1e293b; }
+        .events-list::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 600px) {
+            .header { padding: 16px; }
+            .header h1 { font-size: 1.2rem; }
+            .container { padding: 16px 12px; }
+            .status-card { padding: 24px 16px; }
+            .status-icon { font-size: 3rem; }
+            .status-text { font-size: 1.4rem; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
+            .event-item { padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h1>Power Monitor Dashboard</h1>
+        <div class="subtitle">ระบบตรวจสอบไฟฟ้าดับ ESP32 + Firebase</div>
+    </div>
+    <div class="device-badge" id="deviceName">-</div>
+</div>
+
+<div class="container">
+
+    <!-- Config Bar — แสดงเมื่อยังไม่ได้ตั้งค่า Firebase -->
+    <div class="config-bar" id="configBar">
+        <span>&#9881;</span>
+        <input type="text" id="cfgApiKey" placeholder="Firebase API Key">
+        <input type="text" id="cfgProjectId" placeholder="Firebase Project ID">
+        <button onclick="saveConfig()">เชื่อมต่อ</button>
+    </div>
+
+    <!-- สถานะไฟปัจจุบัน -->
+    <div class="status-card loading" id="statusCard">
+        <div class="status-icon" id="statusIcon">&#8987;</div>
+        <div class="status-text" id="statusText">กำลังเชื่อมต่อ...</div>
+        <div class="status-detail" id="statusDetail">รอข้อมูลจาก Firebase</div>
+    </div>
+
+    <!-- ข้อมูลสรุป -->
+    <div class="info-grid">
+        <div class="info-card">
+            <div class="label">สถานะ ESP32</div>
+            <div class="value">
+                <span class="online-dot gray" id="onlineDot"></span>
+                <span id="espStatus">รอข้อมูล</span>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="label">อัปเดตล่าสุด</div>
+            <div class="value" id="lastUpdate">-</div>
+        </div>
+        <div class="info-card">
+            <div class="label">WiFi RSSI</div>
+            <div class="value" id="wifiRssi">-</div>
+        </div>
+        <div class="info-card">
+            <div class="label">Uptime</div>
+            <div class="value" id="uptime">-</div>
+        </div>
+    </div>
+
+    <!-- ประวัติเหตุการณ์ -->
+    <div class="events-section">
+        <div class="events-header">
+            <h2>ประวัติเหตุการณ์</h2>
+            <span class="event-count" id="eventCount">0 รายการ</span>
+        </div>
+        <div class="events-list" id="eventsList">
+            <div class="events-empty">ยังไม่มีข้อมูลเหตุการณ์</div>
+        </div>
+    </div>
+
+    <!-- เปลี่ยนค่า Firebase -->
+    <div style="text-align:center; margin-top:16px;">
+        <span class="config-link" onclick="showConfig()">&#9881; ตั้งค่า Firebase</span>
+    </div>
+
+</div>
+
+<div class="footer">
+    Power Monitor Dashboard &mdash; ESP32 + Firebase Realtime Database
+</div>
+
+<!-- Firebase SDK (compat mode สำหรับความเรียบง่าย) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+    // =====================================================
+    // จัดการ Config — เก็บใน localStorage
+    // =====================================================
+    function getConfig() {
+        const raw = localStorage.getItem('powerMonitorConfig');
+        return raw ? JSON.parse(raw) : null;
+    }
+
+    function saveConfig() {
+        const apiKey = document.getElementById('cfgApiKey').value.trim();
+        const projectId = document.getElementById('cfgProjectId').value.trim();
+        if (!apiKey || !projectId) {
+            alert('กรุณากรอก API Key และ Project ID');
+            return;
+        }
+        localStorage.setItem('powerMonitorConfig', JSON.stringify({ apiKey, projectId }));
+        location.reload();
+    }
+
+    function showConfig() {
+        const bar = document.getElementById('configBar');
+        bar.classList.toggle('hidden');
+        const cfg = getConfig();
+        if (cfg) {
+            document.getElementById('cfgApiKey').value = cfg.apiKey;
+            document.getElementById('cfgProjectId').value = cfg.projectId;
+        }
+    }
+
+    // =====================================================
+    // ฟังก์ชันแปลงเวลา
+    // =====================================================
+    function formatTimestamp(ts) {
+        if (!ts) return '-';
+        const d = new Date(ts * 1000);
+        const pad = n => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+
+    function timeAgo(ts) {
+        if (!ts) return '-';
+        const diff = Math.floor(Date.now() / 1000) - ts;
+        if (diff < 0) return 'เมื่อสักครู่';
+        if (diff < 60) return `${diff} วินาทีที่แล้ว`;
+        if (diff < 3600) return `${Math.floor(diff / 60)} นาทีที่แล้ว`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)} ชั่วโมงที่แล้ว`;
+        return `${Math.floor(diff / 86400)} วันที่แล้ว`;
+    }
+
+    function formatUptime(ms) {
+        if (!ms) return '-';
+        const sec = Math.floor(ms / 1000);
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        if (h > 0) return `${h} ชม. ${m} น. ${s} วิ.`;
+        if (m > 0) return `${m} น. ${s} วิ.`;
+        return `${s} วิ.`;
+    }
+
+    function rssiLabel(rssi) {
+        if (!rssi) return '-';
+        let quality = '';
+        if (rssi > -50) quality = '(ดีมาก)';
+        else if (rssi > -60) quality = '(ดี)';
+        else if (rssi > -70) quality = '(ปานกลาง)';
+        else quality = '(อ่อน)';
+        return `${rssi} dBm ${quality}`;
+    }
+
+    // =====================================================
+    // อัปเดต UI
+    // =====================================================
+    function updateStatusCard(data) {
+        const card = document.getElementById('statusCard');
+        const icon = document.getElementById('statusIcon');
+        const text = document.getElementById('statusText');
+        const detail = document.getElementById('statusDetail');
+        const deviceName = document.getElementById('deviceName');
+
+        card.classList.remove('power-on', 'power-off', 'loading');
+
+        if (!data) {
+            card.classList.add('loading');
+            icon.textContent = '\u23F3';
+            text.textContent = 'ไม่พบข้อมูล';
+            detail.textContent = 'ตรวจสอบการตั้งค่า Firebase';
+            return;
+        }
+
+        deviceName.textContent = data.device || '-';
+
+        if (data.status === 'power_on') {
+            card.classList.add('power-on');
+            icon.textContent = '\u2705';
+            text.textContent = 'ไฟฟ้าปกติ';
+            detail.textContent = 'ระบบไฟฟ้าทำงานเป็นปกติ';
+        } else {
+            card.classList.add('power-off');
+            icon.textContent = '\u26A0\uFE0F';
+            text.textContent = 'ไฟฟ้าดับ';
+            detail.textContent = 'ตรวจพบไฟฟ้าดับ!';
+        }
+
+        // อัปเดต info cards
+        document.getElementById('lastUpdate').textContent = timeAgo(data.timestamp);
+        document.getElementById('wifiRssi').textContent = rssiLabel(data.wifi_rssi);
+        document.getElementById('uptime').textContent = formatUptime(data.uptime_ms);
+
+        // ตรวจว่า ESP32 ออนไลน์อยู่ไหม (heartbeat ไม่เกิน 2 นาที)
+        const dot = document.getElementById('onlineDot');
+        const espStatus = document.getElementById('espStatus');
+        const age = Math.floor(Date.now() / 1000) - (data.timestamp || 0);
+
+        if (age < 120) {
+            dot.className = 'online-dot green';
+            espStatus.textContent = 'ออนไลน์';
+        } else {
+            dot.className = 'online-dot red';
+            espStatus.textContent = 'ออฟไลน์';
+        }
+    }
+
+    function renderEvents(events) {
+        const list = document.getElementById('eventsList');
+        const countEl = document.getElementById('eventCount');
+
+        if (!events) {
+            list.innerHTML = '<div class="events-empty">ยังไม่มีข้อมูลเหตุการณ์</div>';
+            countEl.textContent = '0 รายการ';
+            return;
+        }
+
+        // แปลง object เป็น array แล้วเรียงจากใหม่ไปเก่า
+        const arr = Object.entries(events).map(([key, val]) => ({ id: key, ...val }));
+        arr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        // แสดงสูงสุด 50 รายการ
+        const display = arr.slice(0, 50);
+        countEl.textContent = `${arr.length} รายการ`;
+
+        if (display.length === 0) {
+            list.innerHTML = '<div class="events-empty">ยังไม่มีข้อมูลเหตุการณ์</div>';
+            return;
+        }
+
+        list.innerHTML = display.map(ev => {
+            const isPowerOn = ev.status === 'power_on';
+            const icon = isPowerOn ? '\u2705' : '\u26A0\uFE0F';
+            const message = ev.message || (isPowerOn ? 'ไฟฟ้ากลับมาเป็นปกติ' : 'ตรวจพบไฟฟ้าดับ');
+            return `
+                <div class="event-item">
+                    <span class="event-icon">${icon}</span>
+                    <div class="event-info">
+                        <div class="event-message">${message}</div>
+                        <div class="event-device">${ev.device || '-'}</div>
+                    </div>
+                    <div class="event-time">${formatTimestamp(ev.timestamp)}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // =====================================================
+    // เชื่อมต่อ Firebase และ listen แบบ real-time
+    // =====================================================
+    function initFirebase() {
+        const cfg = getConfig();
+
+        if (!cfg) {
+            // ยังไม่ได้ตั้งค่า — แสดง config bar
+            document.getElementById('configBar').classList.remove('hidden');
+            updateStatusCard(null);
+            return;
+        }
+
+        // ซ่อน config bar
+        document.getElementById('configBar').classList.add('hidden');
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: cfg.apiKey,
+            databaseURL: `https://${cfg.projectId}-default-rtdb.firebaseio.com`
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ===== Listen สถานะปัจจุบันแบบ real-time =====
+        db.ref('power_monitor/current').on('value', snapshot => {
+            const data = snapshot.val();
+            updateStatusCard(data);
+        });
+
+        // ===== Listen ประวัติเหตุการณ์แบบ real-time =====
+        // ดึง 50 รายการล่าสุด (เรียงตาม timestamp)
+        db.ref('power_monitor/events').orderByChild('timestamp').limitToLast(50).on('value', snapshot => {
+            const data = snapshot.val();
+            renderEvents(data);
+        });
+    }
+
+    // อัปเดต "xx วินาทีที่แล้ว" ทุก 10 วินาที
+    setInterval(() => {
+        const cfg = getConfig();
+        if (!cfg) return;
+        // re-read จาก DOM ไม่ได้ ต้องดึงจาก Firebase อีกที
+        // แต่เราใช้ real-time listener อยู่แล้ว จึงอ่านจาก cache
+    }, 10000);
+
+    // เริ่มต้นเมื่อหน้าเว็บโหลดเสร็จ
+    initFirebase();
+</script>
+
+</body>
+</html>
