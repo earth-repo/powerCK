@@ -322,7 +322,7 @@
     <div class="config-bar" id="configBar">
         <span>&#9881;</span>
         <input type="text" id="cfgApiKey" placeholder="Firebase API Key">
-        <input type="text" id="cfgProjectId" placeholder="Firebase Project ID">
+        <input type="text" id="cfgDbUrl" placeholder="Database URL (เช่น https://xxx.firebasedatabase.app)">
         <button onclick="saveConfig()">เชื่อมต่อ</button>
     </div>
 
@@ -393,12 +393,18 @@
 
     function saveConfig() {
         const apiKey = document.getElementById('cfgApiKey').value.trim();
-        const projectId = document.getElementById('cfgProjectId').value.trim();
-        if (!apiKey || !projectId) {
-            alert('กรุณากรอก API Key และ Project ID');
+        let dbUrl = document.getElementById('cfgDbUrl').value.trim();
+        if (!apiKey || !dbUrl) {
+            alert('กรุณากรอก API Key และ Database URL');
             return;
         }
-        localStorage.setItem('powerMonitorConfig', JSON.stringify({ apiKey, projectId }));
+        // ลบ / ต่อท้ายออก
+        dbUrl = dbUrl.replace(/\/+$/, '');
+        // ถ้ากรอกแค่ชื่อ host ให้เติม https://
+        if (!dbUrl.startsWith('https://')) {
+            dbUrl = 'https://' + dbUrl;
+        }
+        localStorage.setItem('powerMonitorConfig', JSON.stringify({ apiKey, dbUrl }));
         location.reload();
     }
 
@@ -408,7 +414,7 @@
         const cfg = getConfig();
         if (cfg) {
             document.getElementById('cfgApiKey').value = cfg.apiKey;
-            document.getElementById('cfgProjectId').value = cfg.projectId;
+            document.getElementById('cfgDbUrl').value = cfg.dbUrl;
         }
     }
 
@@ -565,7 +571,7 @@
         // Initialize Firebase
         const firebaseConfig = {
             apiKey: cfg.apiKey,
-            databaseURL: `https://${cfg.projectId}-default-rtdb.firebaseio.com`
+            databaseURL: cfg.dbUrl
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();

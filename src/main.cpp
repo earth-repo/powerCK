@@ -13,7 +13,7 @@
 // =====================================================
 // ตั้งค่าระบบทั่วไป (ไม่มีข้อมูลลับ — push ขึ้น GitHub ได้)
 // =====================================================
-#define DEVICE_NAME   "อาคารวิทยาศาสตร์ ชั้น 3"
+#define DEVICE_NAME   "อาคารศูนย์คอมพิวเตอร์"
 #define AC_SENSE_PIN  34       // GPIO34 รับสัญญาณจาก AC Detection Module
 #define LED_STATUS    2        // GPIO2 LED บนบอร์ด ESP32
 #define DEBOUNCE_MS   3000     // ต้องเปลี่ยนสถานะค้างนาน 3 วินาที ถึงนับว่าเปลี่ยนจริง
@@ -43,6 +43,7 @@ bool ntpSynced                  = false; // NTP sync สำเร็จหรื
 // =====================================================
 // Function Prototypes
 // =====================================================
+String firebaseUrl(const char* path);
 void connectWiFi();
 bool readACPower();
 bool sendNotification(bool isPowerOn);
@@ -52,6 +53,18 @@ time_t getTimestamp();
 bool updateFirebaseStatus(bool isPowerOn);
 bool logFirebaseEvent(bool isPowerOn);
 void sendHeartbeat();
+
+// =====================================================
+// firebaseUrl() — สร้าง URL สำหรับ Firebase REST API
+// ถ้ามี FIREBASE_AUTH จะใส่ ?auth= ให้อัตโนมัติ
+// =====================================================
+String firebaseUrl(const char* path) {
+    String url = String("https://") + FIREBASE_HOST + "/" + path + ".json";
+    if (strlen(FIREBASE_AUTH) > 0) {
+        url += "?auth=" + String(FIREBASE_AUTH);
+    }
+    return url;
+}
 
 // =====================================================
 // connectWiFi() — เชื่อมต่อ WiFi พร้อม retry สูงสุด 40 ครั้ง
@@ -136,7 +149,7 @@ bool updateFirebaseStatus(bool isPowerOn) {
     }
 
     // สร้าง URL สำหรับ PATCH ไปที่ /power_monitor/current.json
-    String url = String("https://") + FIREBASE_HOST + "/power_monitor/current.json?auth=" + FIREBASE_AUTH;
+    String url = firebaseUrl("power_monitor/current");
 
     // สร้าง JSON payload
     JsonDocument doc;
@@ -178,7 +191,7 @@ bool logFirebaseEvent(bool isPowerOn) {
     }
 
     // POST ไปที่ /power_monitor/events.json เพื่อสร้าง record ใหม่
-    String url = String("https://") + FIREBASE_HOST + "/power_monitor/events.json?auth=" + FIREBASE_AUTH;
+    String url = firebaseUrl("power_monitor/events");
 
     JsonDocument doc;
     doc["status"]    = isPowerOn ? "power_on" : "power_off";
@@ -223,7 +236,7 @@ void sendHeartbeat() {
         return;
     }
 
-    String url = String("https://") + FIREBASE_HOST + "/power_monitor/current.json?auth=" + FIREBASE_AUTH;
+    String url = firebaseUrl("power_monitor/current");
 
     JsonDocument doc;
     doc["timestamp"] = getTimestamp();
