@@ -288,11 +288,11 @@ bool sendNotification(bool isPowerOn) {
     const char* status;
 
     if (isPowerOn) {
-        title  = "✅ ไฟฟ้ากลับมาเป็นปกติ";
+        title  = "⚡ ไฟฟ้ากลับมาเป็นปกติ";
         body   = "ตรวจพบไฟฟ้ากลับมาเป็นปกติแล้ว";
         status = "power_on";
     } else {
-        title  = "⚠️ ตรวจพบไฟฟ้าดับ";
+        title  = "🔌 ตรวจพบไฟฟ้าดับ";
         body   = "ตรวจพบไฟฟ้าดับ กรุณาตรวจสอบ";
         status = "power_off";
     }
