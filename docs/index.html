@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Power Monitor Dashboard</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -68,7 +70,11 @@
             50% { box-shadow: 0 0 50px rgba(239, 68, 68, 0.3); }
         }
 
-        .status-icon { font-size: 4rem; margin-bottom: 12px; }
+        .status-icon { margin-bottom: 12px; }
+        .status-icon svg { width: 64px; height: 64px; }
+        .status-card.power-on .status-icon svg { color: #22c55e; filter: drop-shadow(0 0 12px rgba(34,197,94,0.5)); }
+        .status-card.power-off .status-icon svg { color: #ef4444; filter: drop-shadow(0 0 12px rgba(239,68,68,0.5)); }
+        .status-card.loading .status-icon svg { color: #94a3b8; }
 
         .status-text { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
         .status-card.power-on .status-text { color: #22c55e; }
@@ -178,7 +184,10 @@
 
         .event-item:hover { background: #334155; }
         .event-item:last-child { border-bottom: none; }
-        .event-icon { font-size: 1.3rem; flex-shrink: 0; }
+        .event-icon { flex-shrink: 0; display: flex; align-items: center; }
+        .event-icon svg { width: 22px; height: 22px; }
+        .event-icon.power-on svg { color: #22c55e; }
+        .event-icon.power-off svg { color: #ef4444; }
         .event-info { flex: 1; }
         .event-message { font-size: 0.9rem; font-weight: 500; color: #e2e8f0; }
         .event-device { font-size: 0.75rem; color: #64748b; margin-top: 2px; }
@@ -247,7 +256,7 @@
 
 <div class="header">
     <div>
-        <h1>Power Monitor Dashboard</h1>
+        <h1><i data-lucide="zap" style="width:24px;height:24px;vertical-align:middle;color:#facc15;margin-right:6px;"></i>Power Monitor Dashboard</h1>
         <div class="subtitle">ระบบตรวจสอบไฟฟ้าดับ ESP32 + Firebase</div>
     </div>
     <div class="device-badge" id="deviceName">-</div>
@@ -265,7 +274,7 @@
 
     <!-- สถานะไฟปัจจุบัน -->
     <div class="status-card loading" id="statusCard">
-        <div class="status-icon" id="statusIcon">&#8987;</div>
+        <div class="status-icon" id="statusIcon"><i data-lucide="loader"></i></div>
         <div class="status-text" id="statusText">กำลังเชื่อมต่อ...</div>
         <div class="status-detail" id="statusDetail">รอข้อมูลจาก Firebase</div>
     </div>
@@ -295,7 +304,7 @@
 
     <!-- กราฟ Timeline สถานะไฟ -->
     <div class="chart-section">
-        <h2>&#9889; กราฟสถานะไฟฟ้า</h2>
+        <h2><i data-lucide="activity" style="width:20px;height:20px;vertical-align:middle;color:#facc15;margin-right:6px;"></i>กราฟสถานะไฟฟ้า</h2>
         <div class="chart-container">
             <canvas id="powerChart"></canvas>
         </div>
@@ -529,9 +538,10 @@
 
         if (!data) {
             card.classList.add('loading');
-            icon.textContent = '\u23F3';
+            icon.innerHTML = '<i data-lucide="loader" class="lucide-spin"></i>';
             text.textContent = 'ไม่พบข้อมูล';
             detail.textContent = 'ตรวจสอบการตั้งค่า Firebase';
+            lucide.createIcons();
             return;
         }
 
@@ -539,15 +549,16 @@
 
         if (data.status === 'power_on') {
             card.classList.add('power-on');
-            icon.textContent = '\u26A1';
+            icon.innerHTML = '<i data-lucide="zap"></i>';
             text.textContent = 'ไฟฟ้าปกติ';
             detail.textContent = 'ระบบไฟฟ้าทำงานเป็นปกติ';
         } else {
             card.classList.add('power-off');
-            icon.textContent = '\uD83D\uDD0C';
+            icon.innerHTML = '<i data-lucide="zap-off"></i>';
             text.textContent = 'ไฟฟ้าดับ';
             detail.textContent = 'ตรวจพบไฟฟ้าดับ!';
         }
+        lucide.createIcons();
 
         document.getElementById('lastUpdate').textContent = timeAgo(data.timestamp);
         document.getElementById('wifiRssi').textContent = rssiLabel(data.wifi_rssi);
@@ -589,11 +600,12 @@
 
         list.innerHTML = display.map(ev => {
             const isPowerOn = ev.status === 'power_on';
-            const icon = isPowerOn ? '\u26A1' : '\uD83D\uDD0C';
+            const iconName = isPowerOn ? 'zap' : 'zap-off';
+            const iconClass = isPowerOn ? 'power-on' : 'power-off';
             const message = ev.message || (isPowerOn ? 'ไฟฟ้ากลับมาเป็นปกติ' : 'ตรวจพบไฟฟ้าดับ');
             return `
                 <div class="event-item">
-                    <span class="event-icon">${icon}</span>
+                    <span class="event-icon ${iconClass}"><i data-lucide="${iconName}"></i></span>
                     <div class="event-info">
                         <div class="event-message">${message}</div>
                         <div class="event-device">${ev.device || '-'}</div>
@@ -602,6 +614,7 @@
                 </div>
             `;
         }).join('');
+        lucide.createIcons();
 
         // อัปเดตกราฟด้วยข้อมูลเดียวกัน
         updateChart(events);
@@ -628,6 +641,7 @@
     }
 
     // เริ่มต้น
+    lucide.createIcons();
     initChart();
     initFirebase();
 </script>

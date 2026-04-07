@@ -294,71 +294,67 @@ bool sendNotification(bool isPowerOn) {
     const char* status;
 
     if (isPowerOn) {
-        title  = "⚡ ไฟฟ้ากลับมาเป็นปกติ";
+        title  = "🟢⚡ ไฟฟ้ากลับมาเป็นปกติ";
         body   = "ตรวจพบไฟฟ้ากลับมาเป็นปกติแล้ว";
         status = "power_on";
     } else {
-        title  = "🔌 ตรวจพบไฟฟ้าดับ";
+        title  = "🔴⚡ ตรวจพบไฟฟ้าดับ";
         body   = "ตรวจพบไฟฟ้าดับ กรุณาตรวจสอบ";
         status = "power_off";
     }
 
-    // สร้าง JSON payload สำหรับ WeLPRU API
-    JsonDocument doc;
-    doc["topic"]  = "personnel";
-    doc["title"]  = title;
-    doc["body"]   = body;
-    doc["target_group"] = "personnel";
+    Serial.printf("[%lu] กำลังส่ง notification: %s (%d คน)\n", millis(), isPowerOn ? "ไฟกลับมา" : "ไฟดับ", TARGET_IDS_COUNT);
 
-    // รายชื่อผู้รับแจ้งเตือน (อ่านจาก TARGET_IDS ด้านบน)
-    JsonArray targetIds = doc["target_ids"].to<JsonArray>();
+    // วนส่งทีละคน (API รับ user_id เป็น string ทีละคน)
+    int successCount = 0;
     for (int i = 0; i < TARGET_IDS_COUNT; i++) {
-        targetIds.add(TARGET_IDS[i]);
-    }
+        JsonDocument doc;
+        doc["user_id"] = TARGET_IDS[i];
+        doc["title"]   = title;
+        doc["body"]    = body;
+        JsonObject data = doc["data"].to<JsonObject>();
+        data["device"] = DEVICE_NAME;
+        data["status"] = status;
 
-    JsonObject data = doc["data"].to<JsonObject>();
-    data["device"] = DEVICE_NAME;
-    data["status"] = status;
+        String jsonPayload;
+        serializeJson(doc, jsonPayload);
 
-    String jsonPayload;
-    serializeJson(doc, jsonPayload);
+        // retry สูงสุด 3 ครั้งต่อคน
+        bool sent = false;
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            HTTPClient http;
+            http.begin(API_URL);
+            http.addHeader("Content-Type", "application/json");
+            http.addHeader("X-API-Key", API_KEY);
+            http.setTimeout(10000);
 
-    Serial.printf("[%lu] กำลังส่ง notification: %s\n", millis(), isPowerOn ? "ไฟกลับมา" : "ไฟดับ");
-    Serial.printf("[%lu] Payload: %s\n", millis(), jsonPayload.c_str());
+            int httpCode = http.POST(jsonPayload);
 
-    // ลองส่ง HTTP POST สูงสุด 3 ครั้ง
-    for (int attempt = 1; attempt <= 3; attempt++) {
-        HTTPClient http;
-        http.begin(API_URL);
-        http.addHeader("Content-Type", "application/json");
-        http.addHeader("X-API-Key", API_KEY);
-        http.setTimeout(10000);
-
-        int httpCode = http.POST(jsonPayload);
-
-        if (httpCode == 200) {
-            String response = http.getString();
-            Serial.printf("[%lu] ส่ง notification สำเร็จ (ครั้งที่ %d) HTTP %d\n", millis(), attempt, httpCode);
-            Serial.printf("[%lu] Response: %s\n", millis(), response.c_str());
-            http.end();
-            return true;
-        } else {
-            Serial.printf("[%lu] ส่ง notification ล้มเหลว ครั้งที่ %d/%d HTTP %d\n", millis(), attempt, 3, httpCode);
-            if (httpCode > 0) {
+            if (httpCode == 200 || httpCode == 202) {
                 String response = http.getString();
-                Serial.printf("[%lu] Response: %s\n", millis(), response.c_str());
+                Serial.printf("[%lu] ส่งถึง %s สำเร็จ HTTP %d\n", millis(), TARGET_IDS[i], httpCode);
+                http.end();
+                sent = true;
+                successCount++;
+                break;
+            } else {
+                Serial.printf("[%lu] ส่งถึง %s ล้มเหลว ครั้งที่ %d/%d HTTP %d\n", millis(), TARGET_IDS[i], attempt, 3, httpCode);
+                if (httpCode > 0) {
+                    String response = http.getString();
+                    Serial.printf("[%lu] Response: %s\n", millis(), response.c_str());
+                }
+                http.end();
+                if (attempt < 3) delay(2000);
             }
-            http.end();
+        }
 
-            if (attempt < 3) {
-                Serial.printf("[%lu] รอ 2 วินาทีก่อน retry...\n", millis());
-                delay(2000);
-            }
+        if (!sent) {
+            Serial.printf("[%lu] ส่งถึง %s ไม่สำเร็จหลัง retry 3 ครั้ง\n", millis(), TARGET_IDS[i]);
         }
     }
 
-    Serial.printf("[%lu] ส่ง notification ไม่สำเร็จหลังจาก retry 3 ครั้ง\n", millis());
-    return false;
+    Serial.printf("[%lu] ส่ง notification สำเร็จ %d/%d คน\n", millis(), successCount, TARGET_IDS_COUNT);
+    return successCount > 0;
 }
 
 // =====================================================
