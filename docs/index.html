@@ -386,31 +386,17 @@
     // =====================================================
     // ค่า Firebase — hardcode ไว้เลย ไม่ต้องกรอก
     // =====================================================
-    const FIREBASE_CONFIG = {
-        apiKey: 'AIzaSyBiw8hrbwd1POp69-0Mjy4aa8jaL-J8tpQ',
-        databaseURL: 'https://powerck-default-rtdb.asia-southeast1.firebasedatabase.app'
-    };
+    const FIREBASE_API_KEY = 'AIzaSyBiw8hrbwd1POp69-0Mjy4aa8jaL-J8tpQ';
+    const FIREBASE_DB_URL  = 'https://powerck-default-rtdb.asia-southeast1.firebasedatabase.app';
 
-    function getConfig() {
-        return FIREBASE_CONFIG;
-    }
-
-    function saveConfig() {
-        // สำรองไว้กรณีต้องการเปลี่ยนค่าทีหลัง
-        const apiKey = document.getElementById('cfgApiKey').value.trim();
-        let dbUrl = document.getElementById('cfgDbUrl').value.trim();
-        if (!apiKey || !dbUrl) { alert('กรุณากรอกให้ครบ'); return; }
-        if (!dbUrl.startsWith('https://')) dbUrl = 'https://' + dbUrl;
-        FIREBASE_CONFIG.apiKey = apiKey;
-        FIREBASE_CONFIG.databaseURL = dbUrl.replace(/\/+$/, '');
-        location.reload();
-    }
+    // ล้าง config เก่าจาก localStorage (ป้องกัน bug จากเวอร์ชันก่อน)
+    localStorage.removeItem('powerMonitorConfig');
 
     function showConfig() {
         const bar = document.getElementById('configBar');
         bar.classList.toggle('hidden');
-        document.getElementById('cfgApiKey').value = FIREBASE_CONFIG.apiKey;
-        document.getElementById('cfgDbUrl').value = FIREBASE_CONFIG.databaseURL;
+        document.getElementById('cfgApiKey').value = FIREBASE_API_KEY;
+        document.getElementById('cfgDbUrl').value = FIREBASE_DB_URL;
     }
 
     // =====================================================
@@ -551,12 +537,10 @@
     // เชื่อมต่อ Firebase และ listen แบบ real-time
     // =====================================================
     function initFirebase() {
-        const cfg = getConfig();
-
-        // Initialize Firebase ด้วยค่าที่ตั้งไว้
+        // Initialize Firebase ด้วยค่าที่ hardcode ไว้
         firebase.initializeApp({
-            apiKey: cfg.apiKey,
-            databaseURL: cfg.databaseURL
+            apiKey: FIREBASE_API_KEY,
+            databaseURL: FIREBASE_DB_URL
         });
         const db = firebase.database();
 
@@ -573,14 +557,6 @@
             renderEvents(data);
         });
     }
-
-    // อัปเดต "xx วินาทีที่แล้ว" ทุก 10 วินาที
-    setInterval(() => {
-        const cfg = getConfig();
-        if (!cfg) return;
-        // re-read จาก DOM ไม่ได้ ต้องดึงจาก Firebase อีกที
-        // แต่เราใช้ real-time listener อยู่แล้ว จึงอ่านจาก cache
-    }, 10000);
 
     // เริ่มต้นเมื่อหน้าเว็บโหลดเสร็จ
     initFirebase();
