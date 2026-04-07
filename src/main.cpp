@@ -302,6 +302,13 @@ bool sendNotification(bool isPowerOn) {
     doc["title"] = title;
     doc["body"]  = body;
     doc["target_group"] = "personnel";
+
+    // รายชื่อผู้รับแจ้งเตือน
+    JsonArray targetIds = doc["target_ids"].to<JsonArray>();
+    targetIds.add("30066");
+    targetIds.add("30257");
+    targetIds.add("50194");
+
     JsonObject data = doc["data"].to<JsonObject>();
     data["device"] = DEVICE_NAME;
     data["status"] = status;

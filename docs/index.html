@@ -318,12 +318,12 @@
 
 <div class="container">
 
-    <!-- Config Bar — แสดงเมื่อยังไม่ได้ตั้งค่า Firebase -->
-    <div class="config-bar" id="configBar">
+    <!-- Config Bar ซ่อนไว้ — กดตั้งค่าถึงจะแสดง -->
+    <div class="config-bar hidden" id="configBar">
         <span>&#9881;</span>
         <input type="text" id="cfgApiKey" placeholder="Firebase API Key">
-        <input type="text" id="cfgDbUrl" placeholder="Database URL (เช่น https://xxx.firebasedatabase.app)">
-        <button onclick="saveConfig()">เชื่อมต่อ</button>
+        <input type="text" id="cfgDbUrl" placeholder="Database URL">
+        <button onclick="saveConfig()">บันทึก</button>
     </div>
 
     <!-- สถานะไฟปัจจุบัน -->
@@ -384,38 +384,33 @@
 
 <script>
     // =====================================================
-    // จัดการ Config — เก็บใน localStorage
+    // ค่า Firebase — hardcode ไว้เลย ไม่ต้องกรอก
     // =====================================================
+    const FIREBASE_CONFIG = {
+        apiKey: 'AIzaSyBiw8hrbwd1POp69-0Mjy4aa8jaL-J8tpQ',
+        databaseURL: 'https://powerck-default-rtdb.asia-southeast1.firebasedatabase.app'
+    };
+
     function getConfig() {
-        const raw = localStorage.getItem('powerMonitorConfig');
-        return raw ? JSON.parse(raw) : null;
+        return FIREBASE_CONFIG;
     }
 
     function saveConfig() {
+        // สำรองไว้กรณีต้องการเปลี่ยนค่าทีหลัง
         const apiKey = document.getElementById('cfgApiKey').value.trim();
         let dbUrl = document.getElementById('cfgDbUrl').value.trim();
-        if (!apiKey || !dbUrl) {
-            alert('กรุณากรอก API Key และ Database URL');
-            return;
-        }
-        // ลบ / ต่อท้ายออก
-        dbUrl = dbUrl.replace(/\/+$/, '');
-        // ถ้ากรอกแค่ชื่อ host ให้เติม https://
-        if (!dbUrl.startsWith('https://')) {
-            dbUrl = 'https://' + dbUrl;
-        }
-        localStorage.setItem('powerMonitorConfig', JSON.stringify({ apiKey, dbUrl }));
+        if (!apiKey || !dbUrl) { alert('กรุณากรอกให้ครบ'); return; }
+        if (!dbUrl.startsWith('https://')) dbUrl = 'https://' + dbUrl;
+        FIREBASE_CONFIG.apiKey = apiKey;
+        FIREBASE_CONFIG.databaseURL = dbUrl.replace(/\/+$/, '');
         location.reload();
     }
 
     function showConfig() {
         const bar = document.getElementById('configBar');
         bar.classList.toggle('hidden');
-        const cfg = getConfig();
-        if (cfg) {
-            document.getElementById('cfgApiKey').value = cfg.apiKey;
-            document.getElementById('cfgDbUrl').value = cfg.dbUrl;
-        }
+        document.getElementById('cfgApiKey').value = FIREBASE_CONFIG.apiKey;
+        document.getElementById('cfgDbUrl').value = FIREBASE_CONFIG.databaseURL;
     }
 
     // =====================================================
@@ -558,22 +553,11 @@
     function initFirebase() {
         const cfg = getConfig();
 
-        if (!cfg) {
-            // ยังไม่ได้ตั้งค่า — แสดง config bar
-            document.getElementById('configBar').classList.remove('hidden');
-            updateStatusCard(null);
-            return;
-        }
-
-        // ซ่อน config bar
-        document.getElementById('configBar').classList.add('hidden');
-
-        // Initialize Firebase
-        const firebaseConfig = {
+        // Initialize Firebase ด้วยค่าที่ตั้งไว้
+        firebase.initializeApp({
             apiKey: cfg.apiKey,
-            databaseURL: cfg.dbUrl
-        };
-        firebase.initializeApp(firebaseConfig);
+            databaseURL: cfg.databaseURL
+        });
         const db = firebase.database();
 
         // ===== Listen สถานะปัจจุบันแบบ real-time =====
