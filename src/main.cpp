@@ -23,7 +23,7 @@
 // =====================================================
 // รายชื่อผู้รับแจ้งเตือน — เพิ่ม/ลบได้ตรงนี้
 // =====================================================
-const char* TARGET_IDS[] = {"30066", "30257", "50194"};
+const char* TARGET_IDS[] = {"30066","50194"};
 const int   TARGET_IDS_COUNT = sizeof(TARGET_IDS) / sizeof(TARGET_IDS[0]);
 
 // =====================================================
@@ -305,8 +305,9 @@ bool sendNotification(bool isPowerOn) {
 
     // สร้าง JSON payload สำหรับ WeLPRU API
     JsonDocument doc;
-    doc["title"] = title;
-    doc["body"]  = body;
+    doc["topic"]  = "personnel";
+    doc["title"]  = title;
+    doc["body"]   = body;
     doc["target_group"] = "personnel";
 
     // รายชื่อผู้รับแจ้งเตือน (อ่านจาก TARGET_IDS ด้านบน)
