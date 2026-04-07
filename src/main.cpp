@@ -21,6 +21,12 @@
 #define HEARTBEAT_INTERVAL 60000  // ส่ง heartbeat ทุก 60 วินาที
 
 // =====================================================
+// รายชื่อผู้รับแจ้งเตือน — เพิ่ม/ลบได้ตรงนี้
+// =====================================================
+const char* TARGET_IDS[] = {"30066", "30257", "50194"};
+const int   TARGET_IDS_COUNT = sizeof(TARGET_IDS) / sizeof(TARGET_IDS[0]);
+
+// =====================================================
 // ตั้งค่า NTP สำหรับเวลาจริง (เขตเวลาไทย UTC+7)
 // =====================================================
 #define NTP_SERVER    "pool.ntp.org"
@@ -303,11 +309,11 @@ bool sendNotification(bool isPowerOn) {
     doc["body"]  = body;
     doc["target_group"] = "personnel";
 
-    // รายชื่อผู้รับแจ้งเตือน
+    // รายชื่อผู้รับแจ้งเตือน (อ่านจาก TARGET_IDS ด้านบน)
     JsonArray targetIds = doc["target_ids"].to<JsonArray>();
-    targetIds.add("30066");
-    targetIds.add("30257");
-    targetIds.add("50194");
+    for (int i = 0; i < TARGET_IDS_COUNT; i++) {
+        targetIds.add(TARGET_IDS[i]);
+    }
 
     JsonObject data = doc["data"].to<JsonObject>();
     data["device"] = DEVICE_NAME;
